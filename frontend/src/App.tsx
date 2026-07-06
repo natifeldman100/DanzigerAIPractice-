@@ -1,14 +1,8 @@
 
-
+import { FlowerVarietiesPage } from './pages/FlowerVarietiesPage'
 
 function App() {
-  
-
- 
-    
-  return (
-   <></>
-  )
+  return <FlowerVarietiesPage />
 }
 
 export default App
