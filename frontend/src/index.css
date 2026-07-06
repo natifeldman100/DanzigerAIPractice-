@@ -11,6 +11,12 @@
   --shadow:
     rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
 
+  --calm-primary: #6f8fae;
+  --calm-primary-hover: #5b7998;
+  --calm-primary-bg: rgba(111, 143, 174, 0.12);
+  --calm-danger: #b98080;
+  --calm-danger-hover: #a06a6a;
+
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
   --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
   --mono: ui-monospace, Consolas, monospace;
@@ -43,6 +49,12 @@
     --social-bg: rgba(47, 48, 58, 0.5);
     --shadow:
       rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+
+    --calm-primary: #8fb0cf;
+    --calm-primary-hover: #a5c2dd;
+    --calm-primary-bg: rgba(143, 176, 207, 0.15);
+    --calm-danger: #c99494;
+    --calm-danger-hover: #d9a8a8;
   }
 
   #social .button-icon {

@@ -1,14 +1,7 @@
-
-
+import CustomersPage from "./Pages/CustomersPage";
 
 function App() {
-  
-
- 
-    
-  return (
-   <></>
-  )
+  return <CustomersPage />;
 }
 
 export default App
