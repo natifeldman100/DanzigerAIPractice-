@@ -11,6 +11,6 @@ public class AppDbContext : DbContext
     
 
     public DbSet<Customer> Customers { get; set; }
-    public DbSet<Item> Items { get; set; }
+   
 }
 
