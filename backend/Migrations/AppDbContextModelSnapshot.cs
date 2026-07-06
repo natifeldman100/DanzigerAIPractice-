@@ -56,18 +56,29 @@ namespace Backend.Migrations
                 });
 
             modelBuilder.Entity("Item", b =>
+            modelBuilder.Entity("FlowerVariety", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("InStock")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<decimal>("Price")
+                        .HasColumnType("TEXT");
+
                     b.HasKey("Id");
 
-                    b.ToTable("Items");
+                    b.ToTable("FlowerVarieties");
                 });
 #pragma warning restore 612, 618
         }

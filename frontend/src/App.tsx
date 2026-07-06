@@ -1,7 +1,9 @@
-import CustomersPage from "./Pages/CustomersPage";
+
+
 
 function App() {
   return <CustomersPage />;
+  return <FlowerVarietiesPage />
 }
 
 export default App
