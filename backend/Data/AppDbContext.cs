@@ -9,5 +9,6 @@ public class AppDbContext : DbContext
     }
 
     public DbSet<Item> Items { get; set; }
+    public DbSet<Supplier> Suppliers { get; set; }
 }
 
