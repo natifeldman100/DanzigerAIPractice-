@@ -1,9 +1,8 @@
 
-
+import SuppliersPage from './pages/SuppliersPage'
 
 function App() {
-  return <CustomersPage />;
-  return <FlowerVarietiesPage />
+  return <SuppliersPage />
 }
 
 export default App
