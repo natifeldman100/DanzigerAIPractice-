@@ -1,11 +1,5 @@
-import type { Supplier } from '../types/supplier'
+import type { Supplier, SupplierInput } from '../types/supplier'
 
-export type SupplierInput = {
-  name: string
-  contactPerson: string
-  phone: string
-  isActive: boolean
-}
 
 const BASE_URL = '/api/suppliers'
 

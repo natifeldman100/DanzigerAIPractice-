@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
-import type { Supplier } from '../types/supplier'
-import { type SupplierInput, getSuppliers, createSupplier, deleteSupplier } from '../api/suppliersService'
+import type { Supplier, SupplierInput } from '../types/supplier'
+import { getSuppliers, createSupplier, deleteSupplier } from '../api/suppliersService'
 import './SuppliersPage.css'
 
 const EMPTY_FORM: SupplierInput = {
@@ -76,13 +76,13 @@ function SuppliersPage() {
           />
           <input
             type="text"
-            value={form.contactPerson}
+            value={form.contactPerson ?? ''}
             onChange={(e) => setForm({ ...form, contactPerson: e.target.value })}
             placeholder="איש קשר"
           />
           <input
             type="text"
-            value={form.phone}
+            value={form.phone ?? ''}
             onChange={(e) => setForm({ ...form, phone: e.target.value })}
             placeholder="טלפון"
           />
