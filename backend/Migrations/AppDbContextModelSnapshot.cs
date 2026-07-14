@@ -55,7 +55,6 @@ namespace Backend.Migrations
                     b.ToTable("Customers");
                 });
 
-            modelBuilder.Entity("Item", b =>
             modelBuilder.Entity("FlowerVariety", b =>
                 {
                     b.Property<int>("Id")
@@ -79,6 +78,30 @@ namespace Backend.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("FlowerVarieties");
+                });
+
+            modelBuilder.Entity("Supplier", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("ContactPerson")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Phone")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Suppliers");
                 });
 #pragma warning restore 612, 618
         }
