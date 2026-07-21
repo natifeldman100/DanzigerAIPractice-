@@ -1,4 +1,5 @@
 using Backend.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,6 +7,7 @@ namespace Backend.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class SuppliersController : ControllerBase
 {
     private readonly AppDbContext _context;
@@ -33,6 +35,7 @@ public class SuppliersController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Editor")]
     public async Task<ActionResult<Supplier>> CreateSupplier(Supplier supplier)
     {
         _context.Suppliers.Add(supplier);
@@ -41,6 +44,7 @@ public class SuppliersController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Editor")]
     public async Task<IActionResult> UpdateSupplier(int id, Supplier supplier)
     {
         if (id != supplier.Id)
@@ -53,6 +57,7 @@ public class SuppliersController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Editor")]
     public async Task<IActionResult> DeleteSupplier(int id)
     {
         var supplier = await _context.Suppliers.FindAsync(id);

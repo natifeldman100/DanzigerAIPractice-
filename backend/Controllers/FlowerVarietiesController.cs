@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Backend.Data;
@@ -6,6 +7,7 @@ namespace Backend.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class FlowerVarietiesController : ControllerBase
 {
     private readonly AppDbContext _db;
@@ -33,6 +35,7 @@ public class FlowerVarietiesController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Editor")]
     public async Task<IActionResult> Create(FlowerVariety variety)
     {
         _db.FlowerVarieties.Add(variety);
@@ -41,6 +44,7 @@ public class FlowerVarietiesController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Editor")]
     public async Task<IActionResult> Update(int id, FlowerVariety variety)
     {
         if (id != variety.Id)
@@ -64,6 +68,7 @@ public class FlowerVarietiesController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Editor")]
     public async Task<IActionResult> Delete(int id)
     {
         var existing = await _db.FlowerVarieties.FindAsync(id);

@@ -10,5 +10,6 @@ public class AppDbContext : DbContext
     public DbSet<FlowerVariety> FlowerVarieties { get; set; }
     public DbSet<Customer> Customers { get; set; }
 public DbSet<Supplier> Suppliers { get; set; }
+public DbSet<User> Users { get; set; }
 }
 

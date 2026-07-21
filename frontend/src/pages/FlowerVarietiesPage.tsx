@@ -8,6 +8,7 @@ import {
 } from '../api/flowerVarieties'
 import { FlowerVarietyForm } from './FlowerVarietyForm'
 import type { FlowerVariety, FlowerVarietyInput } from '../types/flowerVarieties'
+import { canEdit } from '../api/authService'
 import './FlowerVarietiesPage.css'
 
 export function FlowerVarietiesPage() {
@@ -69,15 +70,19 @@ export function FlowerVarietiesPage() {
     await deleteMutation.mutateAsync(id)
   }
 
+  const allowEdit = canEdit()
+
   return (
     <div className="varieties-page">
       <h1>זני פרחים</h1>
 
-      <FlowerVarietyForm
-        initialValue={editing}
-        onSubmit={editing ? handleUpdate : handleCreate}
-        onCancel={() => setEditing(null)}
-      />
+      {allowEdit && (
+        <FlowerVarietyForm
+          initialValue={editing}
+          onSubmit={editing ? handleUpdate : handleCreate}
+          onCancel={() => setEditing(null)}
+        />
+      )}
 
       {error && <p className="error">{error}</p>}
       {loading ? (
@@ -90,7 +95,7 @@ export function FlowerVarietiesPage() {
               <th>צבע</th>
               <th>מחיר</th>
               <th>במלאי</th>
-              <th></th>
+              {allowEdit && <th></th>}
             </tr>
           </thead>
           <tbody>
@@ -100,15 +105,17 @@ export function FlowerVarietiesPage() {
                 <td>{v.color}</td>
                 <td>{v.price}</td>
                 <td>{v.inStock ? 'כן' : 'לא'}</td>
-                <td className="actions">
-                  <button onClick={() => setEditing(v)}>עריכה</button>
-                  <button onClick={() => handleDelete(v.id)}>מחיקה</button>
-                </td>
+                {allowEdit && (
+                  <td className="actions">
+                    <button onClick={() => setEditing(v)}>עריכה</button>
+                    <button onClick={() => handleDelete(v.id)}>מחיקה</button>
+                  </td>
+                )}
               </tr>
             ))}
             {varieties.length === 0 && (
               <tr>
-                <td colSpan={5}>אין זני פרחים עדיין</td>
+                <td colSpan={allowEdit ? 5 : 4}>אין זני פרחים עדיין</td>
               </tr>
             )}
           </tbody>

@@ -1,4 +1,5 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { logout } from '../api/authService'
 import './Layout.css'
 
 const NAV_ITEMS = [
@@ -8,6 +9,13 @@ const NAV_ITEMS = [
 ]
 
 function Layout() {
+  const navigate = useNavigate()
+
+  function handleLogout() {
+    logout()
+    navigate('/login')
+  }
+
   return (
     <div className="app-layout">
       <aside className="app-sidebar">
@@ -26,6 +34,9 @@ function Layout() {
             ))}
           </ul>
         </nav>
+        <button className="app-sidebar-logout" onClick={handleLogout}>
+          התנתקות
+        </button>
       </aside>
 
       <main className="app-content">

@@ -1,6 +1,7 @@
 import {  useMemo, useState, type FormEvent } from 'react'
 import type {Supplier,SupplierInput } from '../types/supplier'
 import { getSuppliers, createSupplier, deleteSupplier,updateSupplier } from '../api/suppliersService'
+import { canEdit } from '../api/authService'
 import './SuppliersPage.css'
 import { useQuery } from '@tanstack/react-query'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -93,6 +94,8 @@ function handleDelete(id: number) {
   if (isLoading) return <p>טוען...</p>
   if (queryError) return <p>שגיאה בטעינת ספקים</p>
 
+  const allowEdit = canEdit()
+
   return (
     <div className="suppliers-page">
       <h1>ספקים</h1>
@@ -107,39 +110,39 @@ function handleDelete(id: number) {
           />
         </div>
 
-        <form className="suppliers-form" onSubmit={submitSupplier}>
-          <input
-            type="text"
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-            placeholder="שם *"
-          />
-          <input
-            type="text"
-            value={form.contactPerson ?? ''}
-            onChange={(e) => setForm({ ...form, contactPerson: e.target.value })}
-            placeholder="איש קשר"
-          />
-          <input
-            type="text"
-            value={form.phone ?? ''}
-            onChange={(e) => setForm({ ...form, phone: e.target.value })}
-            placeholder="טלפון"
-          />
-          <label className="suppliers-checkbox">
+        {allowEdit && (
+          <form className="suppliers-form" onSubmit={submitSupplier}>
             <input
-              type="checkbox"
-              checked={form.isActive}
-              onChange={(e) => setForm({ ...form, isActive: e.target.checked })}
+              type="text"
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              placeholder="שם *"
             />
-            פעיל
-          </label>
-          <button type="submit" className="suppliers-submit" disabled={createMutation.isPending || updateMutation.isPending}>
-            {editingId !== null ? 'עדכן' : 'הוסף'}
-          </button>
-
-       
-        </form>
+            <input
+              type="text"
+              value={form.contactPerson ?? ''}
+              onChange={(e) => setForm({ ...form, contactPerson: e.target.value })}
+              placeholder="איש קשר"
+            />
+            <input
+              type="text"
+              value={form.phone ?? ''}
+              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+              placeholder="טלפון"
+            />
+            <label className="suppliers-checkbox">
+              <input
+                type="checkbox"
+                checked={form.isActive}
+                onChange={(e) => setForm({ ...form, isActive: e.target.checked })}
+              />
+              פעיל
+            </label>
+            <button type="submit" className="suppliers-submit" disabled={createMutation.isPending || updateMutation.isPending}>
+              {editingId !== null ? 'עדכן' : 'הוסף'}
+            </button>
+          </form>
+        )}
         {error && <p className="suppliers-error">{error}</p>}
 
         <table className="suppliers-table">
@@ -149,7 +152,7 @@ function handleDelete(id: number) {
               <th>איש קשר</th>
               <th>טלפון</th>
               <th>סטטוס</th>
-              <th></th>
+              {allowEdit && <th></th>}
             </tr>
           </thead>
           <tbody>
@@ -163,19 +166,21 @@ function handleDelete(id: number) {
                     {s.isActive ? 'פעיל' : 'לא פעיל'}
                   </span>
                 </td>
-      <td>          
-  <button className="suppliers-edit" onClick={() => handleEdit(s)}>
-    ערוך
-  </button>
-  <button className="suppliers-delete" onClick={() => handleDelete(s.id)}>
-    מחק
-  </button>
-</td>
+                {allowEdit && (
+                  <td>
+                    <button className="suppliers-edit" onClick={() => handleEdit(s)}>
+                      ערוך
+                    </button>
+                    <button className="suppliers-delete" onClick={() => handleDelete(s.id)}>
+                      מחק
+                    </button>
+                  </td>
+                )}
               </tr>
             ))}
             {filteredSuppliers.length === 0 && (
               <tr>
-                <td colSpan={5} className="cell-empty">
+                <td colSpan={allowEdit ? 5 : 4} className="cell-empty">
                   {suppliers.length === 0 ? 'אין ספקים עדיין' : 'לא נמצאו תוצאות'}
                 </td>
               </tr>
