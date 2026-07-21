@@ -23,3 +23,14 @@ export async function createSupplier(supplier: SupplierInput): Promise<Supplier>
 export async function deleteSupplier(id: number): Promise<void> {
   await fetch(`${BASE_URL}/${id}`, { method: 'DELETE' })
 }
+
+export async function updateSupplier(id: number, supplier: SupplierInput): Promise<void> {
+  const res = await fetch(`${BASE_URL}/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id, ...supplier }),
+  })
+  if (!res.ok) {
+    throw new Error('Failed to update supplier')
+  }
+}
