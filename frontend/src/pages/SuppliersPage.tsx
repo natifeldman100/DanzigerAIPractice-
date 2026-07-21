@@ -1,8 +1,10 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react'
-import type { Supplier, SupplierInput } from '../types/supplier'
-import { getSuppliers, createSupplier, deleteSupplier } from '../api/suppliersService'
+import {  useMemo, useState, type FormEvent } from 'react'
+import type {Supplier,SupplierInput } from '../types/supplier'
+import { getSuppliers, createSupplier, deleteSupplier,updateSupplier } from '../api/suppliersService'
 import './SuppliersPage.css'
-
+import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+ 
 const EMPTY_FORM: SupplierInput = {
   name: '',
   contactPerson: '',
@@ -11,39 +13,74 @@ const EMPTY_FORM: SupplierInput = {
 }
 
 function SuppliersPage() {
-  const [suppliers, setSuppliers] = useState<Supplier[]>([])
+ 
   const [form, setForm] = useState<SupplierInput>(EMPTY_FORM)
   const [search, setSearch] = useState('')
   const [error, setError] = useState('')
+  const [editingId, setEditingId] = useState<number | null>(null)
 
-  useEffect(() => {
-    loadSuppliers()
-  }, [])
+ 
+const { data: suppliers = [], isLoading, error: queryError} = useQuery({
+  queryKey: ['suppliers'],
+  queryFn: getSuppliers,
+})
+ 
+const queryClient = useQueryClient()
 
-  async function loadSuppliers() {
-    setSuppliers(await getSuppliers())
-  }
-
-  async function addSupplier(e: FormEvent) {
-    e.preventDefault()
-    setError('')
-    if (!form.name.trim()) return
-
-    try {
-      await createSupplier(form)
-    } catch {
-      setError('שגיאה בהוספת ספק')
-      return
-    }
-
+const createMutation = useMutation({
+  mutationFn: createSupplier,
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ['suppliers'] })
     setForm(EMPTY_FORM)
-    await loadSuppliers()
-  }
+  },
+  onError: () => setError('שגיאה בהוספת ספק'),
+})
 
-  async function handleDelete(id: number) {
-    await deleteSupplier(id)
-    await loadSuppliers()
+const updateMutation = useMutation({
+  mutationFn: ({ id, data }: { id: number; data: SupplierInput }) => updateSupplier(id, data),
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ['suppliers'] })
+    setForm(EMPTY_FORM)
+    setEditingId(null)
+  },
+  onError: () => setError('שגיאה בעדכון ספק'),
+})
+
+const deleteMutation = useMutation({
+  mutationFn: deleteSupplier,
+  onSuccess: () => queryClient.invalidateQueries({ queryKey: ['suppliers'] }),
+})
+
+
+
+function submitSupplier(e: FormEvent) {
+  e.preventDefault()
+  setError('')
+  if (!form.name.trim()) return
+
+  if (editingId !== null) {
+    updateMutation.mutate({ id: editingId, data: form })
+  } else {
+    createMutation.mutate(form)
   }
+}
+
+
+
+function handleDelete(id: number) {
+  deleteMutation.mutate(id)
+}
+
+  async function handleEdit(supplier: Supplier) {
+  setEditingId(supplier.id)
+  setForm({
+    name: supplier.name,
+    contactPerson: supplier.contactPerson ?? '',
+    phone: supplier.phone ?? '',
+    isActive: supplier.isActive,
+  })
+}
+
 
   const filteredSuppliers = useMemo(() => {
     const query = search.trim().toLowerCase()
@@ -52,6 +89,9 @@ function SuppliersPage() {
       [s.name, s.contactPerson, s.phone].some((field) => field?.toLowerCase().includes(query)),
     )
   }, [suppliers, search])
+
+  if (isLoading) return <p>טוען...</p>
+  if (queryError) return <p>שגיאה בטעינת ספקים</p>
 
   return (
     <div className="suppliers-page">
@@ -67,7 +107,7 @@ function SuppliersPage() {
           />
         </div>
 
-        <form className="suppliers-form" onSubmit={addSupplier}>
+        <form className="suppliers-form" onSubmit={submitSupplier}>
           <input
             type="text"
             value={form.name}
@@ -94,9 +134,11 @@ function SuppliersPage() {
             />
             פעיל
           </label>
-          <button type="submit" className="suppliers-submit">
-            הוסף
+          <button type="submit" className="suppliers-submit" disabled={createMutation.isPending || updateMutation.isPending}>
+            {editingId !== null ? 'עדכן' : 'הוסף'}
           </button>
+
+       
         </form>
         {error && <p className="suppliers-error">{error}</p>}
 
@@ -121,11 +163,14 @@ function SuppliersPage() {
                     {s.isActive ? 'פעיל' : 'לא פעיל'}
                   </span>
                 </td>
-                <td>
-                  <button className="suppliers-delete" onClick={() => handleDelete(s.id)}>
-                    מחק
-                  </button>
-                </td>
+      <td>          
+  <button className="suppliers-edit" onClick={() => handleEdit(s)}>
+    ערוך
+  </button>
+  <button className="suppliers-delete" onClick={() => handleDelete(s.id)}>
+    מחק
+  </button>
+</td>
               </tr>
             ))}
             {filteredSuppliers.length === 0 && (
