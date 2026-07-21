@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useMutation } from '@tanstack/react-query'
 import {
   createFlowerVariety,
   deleteFlowerVariety,
@@ -31,24 +32,41 @@ export function FlowerVarietiesPage() {
     }
   }
 
+  const createMutation = useMutation({
+    mutationFn: createFlowerVariety,
+    onSuccess: (created) => {
+      setVarieties((prev) => [...prev, created])
+    },
+  })
+
+  const updateMutation = useMutation({
+    mutationFn: updateFlowerVariety,
+    onSuccess: (_data, updated) => {
+      setVarieties((prev) => prev.map((v) => (v.id === updated.id ? updated : v)))
+      setEditing(null)
+    },
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteFlowerVariety,
+    onSuccess: (_data, id) => {
+      setVarieties((prev) => prev.filter((v) => v.id !== id))
+      if (editing?.id === id) setEditing(null)
+    },
+  })
+
   async function handleCreate(input: FlowerVarietyInput) {
-    const created = await createFlowerVariety(input)
-    setVarieties((prev) => [...prev, created])
+    await createMutation.mutateAsync(input)
   }
 
   async function handleUpdate(input: FlowerVarietyInput) {
     if (!editing) return
-    const updated = { ...editing, ...input }
-    await updateFlowerVariety(updated)
-    setVarieties((prev) => prev.map((v) => (v.id === updated.id ? updated : v)))
-    setEditing(null)
+    await updateMutation.mutateAsync({ ...editing, ...input })
   }
 
   async function handleDelete(id: number) {
     if (!confirm('למחוק את הזן?')) return
-    await deleteFlowerVariety(id)
-    setVarieties((prev) => prev.filter((v) => v.id !== id))
-    if (editing?.id === id) setEditing(null)
+    await deleteMutation.mutateAsync(id)
   }
 
   return (
